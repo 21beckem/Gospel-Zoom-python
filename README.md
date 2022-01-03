@@ -10,11 +10,7 @@ Software made to make managing zoom webinars MUCH easier!
 
 ```json
 {
-    "webinarId" : "00000000000",
-
-    "startAudioByDefualt" : false,
-    "startVideoByDefualt" : false,
-    "startRemoteServer" : true
+    "webinarId" : "00000000000"
 }
 ```
 4. Run app.py
