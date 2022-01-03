@@ -1,6 +1,6 @@
 # Gospel Zoom&trade;
 
-![alt text](https://github.com/21beckem/Gospel-Zoom/blob/main/churchZoomIcon.png?raw=true)
+<img src="https://github.com/21beckem/Gospel-Zoom/blob/main/churchZoomIcon.png?raw=true" alt="logo" width="130"/>
 
 Software made to make managing zoom webinars MUCH easier!
 
