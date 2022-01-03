@@ -13,4 +13,20 @@ Software made to make managing zoom webinars MUCH easier!
     "webinarId" : "12345678901"
 }
 ```
-4. Run app.py
+4. Install GospelZoomRemote.apk on any android device
+
+## Usage
+
+1. Run app.py
+* locate the IP address and Port. Will look like this:
+```bash
+ * Debug mode: off
+ * Running on http://192.168.1.151:1830/ (Press CTRL+C to quit)
+                    ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+```
+2. open Gospel Zoom on your android device
+* Enter the IP Address and port at the top left and click [Save]
+* turn on the preview toggle and you'll see your computer screen
+* press the buttons at the bottom to control zoom
+    * press the end button twice to actually end the meeting
+* refresh button at top right will help if screen feed freezes
