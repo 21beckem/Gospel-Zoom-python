@@ -17,4 +17,4 @@ Software made to make managing zoom webinars MUCH easier!
     "startRemoteServer" : true
 }
 ```
-4. Run app.exe
+4. Run app.py
