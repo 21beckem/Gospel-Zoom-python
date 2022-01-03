@@ -10,7 +10,7 @@ Software made to make managing zoom webinars MUCH easier!
 
 ```json
 {
-    "webinarId" : "00000000000"
+    "webinarId" : "12345678901"
 }
 ```
 4. Run app.py
