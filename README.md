@@ -1,4 +1,4 @@
-# Gospel Zoom
+# Gospel Zoom&trade;
 
 Software made to make managing zoom webinars MUCH easier!
 
@@ -26,7 +26,7 @@ Software made to make managing zoom webinars MUCH easier!
 ```
 2. open Gospel Zoom on your android device
 * Enter the IP Address and port at the top left and click [Save]
-* turn on the preview toggle and you'll see your computer screen
+* turn on the preview toggle at top right and you'll see your computer screen
 * press the buttons at the bottom to control zoom
     * press the end button twice to actually end the meeting
 * refresh button at top right will help if screen feed freezes
