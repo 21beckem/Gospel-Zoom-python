@@ -1,5 +1,7 @@
 # Gospel Zoom&trade;
 
+![alt text](https://github.com/21beckem/Gospel-Zoom/blob/[branch]/churchZoomIcon.png?raw=true)
+
 Software made to make managing zoom webinars MUCH easier!
 
 ## Installation
