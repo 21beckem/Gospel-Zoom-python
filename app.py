@@ -1,3 +1,4 @@
+#region   Imports
 import datetime, time, subprocess, csv, os, webbrowser, sys
 try:
     import pyautogui as gui
@@ -7,16 +8,15 @@ try:
     import numpy, urllib.parse
     from imutils.video import VideoStream
     from numpy import asarray
-    from flask import Response
-    from flask import Flask
-    from flask import render_template
-    import threading, imutils, mss, socket
+    from flask import Response, Flask, render_template, request
+    import threading, imutils, mss, socket, eel, random
 except ModuleNotFoundError as err:
-    print("You don't have all the modules needed installed. Please go through the read me files. Press anything to exit")
-    input()
+    print("You don't have all the needed modules installed. Please go through the read me files. Press anything to exit")
     exit()
+#endregion
 
-#__path__ = sys.path[0] + '\\zoom_images\\'
+#region   Zoom
+
 __path__ = 'zoom_images/'
 
 gui.FAILSAFE = False
@@ -28,7 +28,7 @@ class Zoom:
         link = 'https://zoom.us/switch_account?backUrl=' + urllib.parse.quote(startLink)
         #print(link)
         webbrowser.open(link)
-        time.sleep(3)
+        eel.sleep(3)
         Zoom.running =  Zoom.rawPersistantClick('signInBtn.png')
         return Zoom.running
     def startWebinar():
@@ -47,7 +47,7 @@ class Zoom:
                 gui.click(var)
                 Zoom.resetMousePos()
                 return True
-            time.sleep(Zoom.betweenTries)
+            eel.sleep(Zoom.betweenTries)
         return False
     def rawClick(imgName):
         var = gui.locateOnScreen(__path__ + imgName, confidence=0.9)
@@ -90,11 +90,13 @@ class Zoom:
             Zoom.running = False
             return True
     def cancelEnd(timeout=2):
-        time.sleep(timeout)
+        eel.sleep(timeout)
         Zoom.rawClick('cancelEndBtn.png')
     def test():
         return True
+#endregion
 
+#region   Screenserver
 
 ipv4 = socket.gethostbyname(socket.gethostname())
 outputFrame = None
@@ -102,33 +104,45 @@ lock = threading.Lock()
 
 app = Flask(__name__)
 
-time.sleep(2.0)
+Handshake = '0000';
+
+eel.sleep(1)
+
+def confirmShake():
+    return Handshake == request.args.get('x')
 
 @app.route('/startmeeting')
 def startmeeting():
-    Zoom.startWebinar()
-    return ('', 204)
+    if confirmShake():
+        Zoom.startWebinar()
+        return ('', 204)
+    else:
+        return ('', 400)
 @app.route('/togglefeed')
 def togglefeed():
-    Zoom.toggleVideoAndAudio_synced();
-    return ('', 204)
+    if confirmShake():
+        Zoom.toggleVideoAndAudio_synced()
+        return ('', 204)
+    else:
+        return ('', 400)
 @app.route('/endmeeting')
 def endmeeting():
-    Zoom.endWebinar()
-    return ('', 204)
-
-@app.route("/video_feed")
-def index():
-	# return the rendered template
-	return render_template("index.html")
-
-
+    if confirmShake():
+        Zoom.endWebinar()
+        return ('', 204)
+    else:
+        return ('', 400)
 @app.route("/")
 def video_feed():
-	# return the response generated along with the specific media
-	# type (mime type)
-	return Response(generate(),
-		mimetype = "multipart/x-mixed-replace; boundary=frame")
+    if confirmShake():
+        return Response(generate(),
+            mimetype = "multipart/x-mixed-replace; boundary=frame")
+    else:
+        return ('', 400)
+@app.route("/remote_connected")
+def remote_connected():
+    eel.remoteConnected()
+    return ('', 204)
 
 
 def generate():
@@ -165,20 +179,52 @@ def startScreenServer():
     t.start()
     # start the flask app
     app.run(host=ipv4, port=1830, debug=False, threaded=True, use_reloader=False)
+#endregion
 
+#region   Eel
+eel.init('web')
+def startEel():
+    eel.start('index.html', mode='edge', block=False)
+    # manage numpad
+    wasRunning = False;
+    eel.setIPconnectionQR('["' + socket.gethostbyname(socket.gethostname()) + '", 1830]')
+    while True:
+        if Zoom.running:
+            if not wasRunning:
+                wasRunning = True
+            if keyboard.is_pressed('1'):
+                Zoom.startWebinar()
+            if keyboard.is_pressed('2'):
+                Zoom.toggleVideoAndAudio_synced()
+            if keyboard.is_pressed('3'):
+                Zoom.endWebinar()
+        else:
+            if wasRunning:
+                wasRunning = False
+                eel.webinarEnded()
+            if keyboard.is_pressed('0'):
+                set_handshake()
+                if Zoom.launchWebinar('https://zoom.us/s/96138303673'):
+                    eel.sleep(5)
+                else:
+                    print('error while launching webinar')
+        eel.sleep(0.05)
 
-from threading import Thread
-import time, keyboard
+@eel.expose
+def set_handshake():
+    global Handshake;
+    Handshake = str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9))
+    eel.setHandshake(Handshake)
+#endregion
+
+import keyboard
 
 def main():
     if Zoom.launchWebinar('https://zoom.us/s/96138303673'):
-        time.sleep(5)
-        #Zoom.setVideoAndAudio_synced(True)
-        #time.sleep(1)
-        #Zoom.startWebinar()
-        #listen for commands
+        eel.sleep(5)
+
         while True:
-            time.sleep(1)
+            eel.sleep(1)
             if not Zoom.running:
                 break
     else:
@@ -188,4 +234,4 @@ def main():
 if __name__ == '__main__':
     server = Thread(target=startScreenServer, daemon=True)
     server.start()
-    main()
+    startEel()
