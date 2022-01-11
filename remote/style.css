@@ -49,6 +49,10 @@ body, html {
     width: 100%;
     height: 60%;
     margin-bottom: 10px;
+    background-image: url(../churchZoomIcon.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 #controlButtonsBox {
     width: 100%;

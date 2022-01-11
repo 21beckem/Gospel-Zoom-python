@@ -1,8 +1,8 @@
 function _(x) {return document.getElementById(x);}
+const remoteUrlQR = _('remoteUrlQR');
 const HandShakeEl = _('handshake');
-function StartZoomMeeting() {
-    eel.set_handshake();
-}
+
+new QRCode(_("remoteUrlQR"), 'https://21beckem.github.io/Gospel-Zoom/remote/');
 
 eel.expose(setHandshake);
 function setHandshake(shake) {

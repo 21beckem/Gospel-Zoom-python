@@ -33,24 +33,27 @@
     <div id="successBox" class="alert alert-success">
         <strong>Success!</strong> Information successfully saved.
     </div>
+    <div id="errorBox" class="alert alert-error">
+        <strong>Oh no!</strong> There's been an error. It could be the handshake or the connection.
+    </div>
     <div id="page-home" class="page">
-        <div id="previewScreenToggleBox"><a>Preview Feed:</a><input type="checkbox" id="previewScreenToggleBox"></div>
+        <div id="previewScreenToggleBox"><a>Preview Feed:</a><input onclick="handlePreviewToggle(this)" type="checkbox" id="previewScreenToggleBox"></div>
         <br>
         <div id="previewScreenBox">
-            <img class="screen" src="../churchZoomIcon.png" alt="computer_screen">
+            <!-- <img id="previewImg" class="screen" src="../churchZoomIcon.png" onerror="showAlert('errorBox',5000)" alt="error"> -->
         </div>
         <div id="controlButtonsBox">
             <div class="btnBox">
-                <!--<button class="ctrlBtn" style="background-color: #0E71EB;">Open Meeting</button>-->
+                <!--<button class="ctrlBtn" style="background-color: #0E71EB;" onclick="sendBtnPress('startmeeting')">Open Meeting</button>-->
             </div>
             <div class="btnBox">
-                <button class="ctrlBtn" style="background-color: #0dbe45;">Start Meeting</button>
+                <button class="ctrlBtn" style="background-color: #0dbe45;" onclick="sendBtnPress('/startmeeting')">Start Meeting</button>
             </div>
             <div class="btnBox">
-                <button class="ctrlBtn" style="background-color: #9e9e9e;">Toggle Audio/Video</button>
+                <button class="ctrlBtn" style="background-color: #9e9e9e;" onclick="sendBtnPress('/togglefeed')">Toggle Audio/Video</button>
             </div>
             <div class="btnBox">
-                <button class="ctrlBtn" style="background-color: #dd3534;">End Meeting</button>
+                <button class="ctrlBtn" style="background-color: #dd3534;" onclick="sendBtnPress('/endmeeting')">End Meeting</button>
             </div>
         </div>
     </div>

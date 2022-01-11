@@ -28,16 +28,18 @@ async function connectToHost() {
     
 }
 let NavOpen = false;
-const sideNav = document.getElementById("sideNav");
-const mainContent = document.getElementById("mainContent");
-const handshakeInput = document.getElementById('handshakeInput');
-const ipInput = document.getElementById('ipInput');
-const portInput = document.getElementById('portInput');
-const page_home = document.getElementById('page-home');
-const page_handshake = document.getElementById('page-handshake');
-const page_connect = document.getElementById('page-connect');
-const page_qr = document.getElementById('page-qr');
-const qrLoader = document.getElementById('qrLoader');
+function _(x) {return document.getElementById(x);}
+const sideNav = _("sideNav");
+const mainContent = _("mainContent");
+const handshakeInput = _('handshakeInput');
+const ipInput = _('ipInput');
+const portInput = _('portInput');
+const page_home = _('page-home');
+const page_handshake = _('page-handshake');
+const page_connect = _('page-connect');
+const page_qr = _('page-qr');
+const qrLoader = _('qrLoader');
+const previewScreenBox = _('previewScreenBox');
 
 getHostAddr();
 getHandshake();
@@ -145,11 +147,41 @@ function getCameraAccess() {
         alert(err);
     });
 }
+window.onload = function() {
+    getHostAddr();
+    fetch(HostAddr + '/remote_connected').then();
+};
+function refreshPreviewImg() {
+    previewScreenBox.style.backgroundImage = 'url(' + HostAddr + '/?x=' + Handshake + '&t=' + new Date().getTime() + ')';
+}
+function handlePreviewToggle(toggleEl) {
+    if (toggleEl.checked) {
+        refreshPreviewImg();
+    } else {
+        previewScreenBox.style.backgroundImage = 'url(../churchZoomIcon.png)';
+    }
+}
+async function sendBtnPress(path) {
+    fetch(HostAddr + path + '?x=' + Handshake)
+    .then((response) => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Something went wrong');
+        }
+    })
+    .then((responseJson) => {
+        // Do something with the response
+    })
+    .catch((error) => {
+        console.log(error)
+    });
+}
 
 function showAlert(alertBoxId, timeMillis=2000) {
-    document.getElementById(alertBoxId).style.opacity = '1';
+    _(alertBoxId).style.opacity = '1';
     setTimeout(function() {
-        document.getElementById(alertBoxId).style.opacity = '0'
+        _(alertBoxId).style.opacity = '0'
     }, timeMillis);
 }
 function verifyHandshakeLength() {
@@ -160,12 +192,16 @@ function saveHandshake() {
     localStorage.setObject('Handshake', toBeSaved);
     openPage('home');
     showAlert('successBox');
+    getHostAddr();
+    getHandshake();
 }
 function saveAddress() {
     var toBeSaved = [ipInput.value, portInput.value];
     localStorage.setObject('HostAddr', toBeSaved);
     openPage('home');
     showAlert('successBox');
+    getHostAddr();
+    getHandshake();
 }
 function detectswipe(el,func) {
   swipe_det = new Object();
@@ -175,7 +211,7 @@ function detectswipe(el,func) {
   var min_y = 50;  //min y swipe for vertical swipe
   var max_y = 60;  //max y difference for horizontal swipe
   var direc = "";
-  ele = document.getElementById(el);
+  ele = _(el);
   ele.addEventListener('touchstart',function(e){
     var t = e.touches[0];
     swipe_det.sX = t.screenX; 

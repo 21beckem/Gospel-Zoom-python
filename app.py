@@ -104,7 +104,7 @@ lock = threading.Lock()
 
 app = Flask(__name__)
 
-Handshake = '0000';
+Handshake = None;
 
 eel.sleep(1)
 
@@ -202,12 +202,14 @@ def startEel():
             if wasRunning:
                 wasRunning = False
                 eel.webinarEnded()
+                Handshake = None;
             if keyboard.is_pressed('0'):
                 set_handshake()
                 if Zoom.launchWebinar('https://zoom.us/s/96138303673'):
                     eel.sleep(5)
                 else:
                     print('error while launching webinar')
+                    eel.webinarEnded()
         eel.sleep(0.05)
 
 @eel.expose
