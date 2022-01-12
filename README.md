@@ -11,7 +11,7 @@ Built on Python 3.10.0
 1. Download the code as zip and extract it to a local folder.
 2. Open extracted folder in cmd and run
 ```bash
-> pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 3. Edit config.json for your webinar:
    - The only mandatory edits needed are for the webinarId and the browser
@@ -44,7 +44,7 @@ Built on Python 3.10.0
 1. Ensure the device you're using as your remote is on the same WiFi as the Gospel Zoom&trade; server.
 2. Open cmd in project folder and run
 ```bash
-> py app.py
+py app.py
 ```
 4. Scan the QR code on the screen with your device
    - This will open a new browser window and the QR code on the Gospel Zoom&trade; screen will dissapear
