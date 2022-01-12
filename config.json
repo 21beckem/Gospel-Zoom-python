@@ -1,3 +1,6 @@
 {
-    "webinarId" : "12345678901"
+    "webinarId": "96138303673",
+    "browser" : "edge",
+    "buttonConfidence": 0.9,
+    "remotePort": 1830
 }

@@ -1,5 +1,5 @@
 #region   Imports
-import datetime, time, subprocess, csv, os, webbrowser, sys
+import datetime, time, subprocess, csv, os, webbrowser, sys, json
 try:
     import pyautogui as gui
     from PIL import Image
@@ -7,12 +7,21 @@ try:
     from threading import Thread
     from numpy import asarray
     from flask import Response, Flask, render_template, request
-    import threading, imutils, mss, socket, eel, random, numpy, urllib.parse
+    import threading, imutils, mss, socket, eel, random, numpy, urllib.parse, keyboard
 except ModuleNotFoundError as err:
     print("You don't have all the needed modules installed. Please go through the read me files.")
     exit()
 #endregion
-
+def getConfig():
+    global config
+    f = open('config.json')
+    config = json.load(f)
+    f.close()
+    neededKeys = ["webinarId", "browser", "buttonConfidence", "remotePort"]
+    for key in neededKeys:
+        if not key in config:
+            return False
+    return True
 #region   Zoom
 
 __path__ = 'zoom_images/'
@@ -40,7 +49,7 @@ class Zoom:
         gui.moveTo(x, y)
     def rawPersistantClick(imgName):
         for _ in range(Zoom.tries):
-            var = gui.locateOnScreen(__path__ + imgName, confidence=0.9)
+            var = gui.locateOnScreen(__path__ + imgName, confidence=config['buttonConfidence'])
             if var != None:
                 gui.click(var)
                 Zoom.resetMousePos()
@@ -48,7 +57,7 @@ class Zoom:
             eel.sleep(Zoom.betweenTries)
         return False
     def rawClick(imgName):
-        var = gui.locateOnScreen(__path__ + imgName, confidence=0.9)
+        var = gui.locateOnScreen(__path__ + imgName, confidence=config['buttonConfidence'])
         if var != None:
             gui.click(var)
             Zoom.resetMousePos()
@@ -176,13 +185,13 @@ def startScreenServer():
     t = threading.Thread(target=get_frames, daemon=True)
     t.start()
     # start the flask app
-    app.run(host=ipv4, port=1830, debug=False, threaded=True, use_reloader=False)
+    app.run(host=ipv4, port=config['remotePort'], debug=False, threaded=True, use_reloader=False)
 #endregion
 
 #region   Eel
 eel.init('web')
 def startEel():
-    eel.start('index.html', mode='edge', block=False)
+    eel.start('index.html', mode=config['browser'], block=False)
     # manage numpad
     wasRunning = False;
     eel.setIPconnectionQR('["' + socket.gethostbyname(socket.gethostname()) + '", 1830]')
@@ -217,10 +226,8 @@ def set_handshake():
     eel.setHandshake(Handshake)
 #endregion
 
-import keyboard
-
 def main():
-    if Zoom.launchWebinar('https://zoom.us/s/96138303673'):
+    if Zoom.launchWebinar('https://zoom.us/s/' + config['webinarId']):
         eel.sleep(5)
 
         while True:
@@ -232,6 +239,9 @@ def main():
 
 
 if __name__ == '__main__':
-    server = Thread(target=startScreenServer, daemon=True)
-    server.start()
-    startEel()
+    if getConfig():
+        server = Thread(target=startScreenServer, daemon=True)
+        server.start()
+        startEel()
+    else:
+        print("Oh no, something's wrong with your config.json. Or it doesn't exist...  read the README")
