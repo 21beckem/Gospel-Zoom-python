@@ -5,13 +5,11 @@ try:
     from PIL import Image
     from cv2 import cv2
     from threading import Thread
-    import numpy, urllib.parse
-    from imutils.video import VideoStream
     from numpy import asarray
     from flask import Response, Flask, render_template, request
-    import threading, imutils, mss, socket, eel, random
+    import threading, imutils, mss, socket, eel, random, numpy, urllib.parse
 except ModuleNotFoundError as err:
-    print("You don't have all the needed modules installed. Please go through the read me files. Press anything to exit")
+    print("You don't have all the needed modules installed. Please go through the read me files.")
     exit()
 #endregion
 

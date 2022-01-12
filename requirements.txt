@@ -1,0 +1,9 @@
+pyautogui
+Pillow
+opencv-python
+numpy
+flask
+imutils
+mss
+sockets
+eel

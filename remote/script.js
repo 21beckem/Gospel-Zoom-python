@@ -11,7 +11,7 @@ function getHandshake() {
     let shake = localStorage.getObject('Handshake') || [];
     if (shake.length == 1) {
         Handshake = shake[0];
-        handshakeInput.value = Handshake;
+        //handshakeInput.value = Handshake;
         return shake;
     }
 }

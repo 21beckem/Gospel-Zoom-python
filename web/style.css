@@ -1,27 +1,69 @@
-/* Add a black background color to the top navigation */
-.topnav {
-    background-color: #333;
+body, html {
+    font-family: "Lato", sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0078C4;
+    color: #001e37;
     overflow: hidden;
 }
-
-/* Style the links inside the navigation bar */
-.topnav a {
-    float: left;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 17px;
+#QRcontainer {
+    width: 100%;
+    height: 100%;
 }
-
-/* Change the color of links on hover */
-.topnav a:hover {
-    background-color: #ddd;
-    color: black;
+.QRholder {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(1.3);
 }
-
-/* Add a color to the active/current link */
-/* .topnav a.active {
-    background-color: #4CAF50;
-    color: white;
-} */
+#QRcomment {
+    font-weight: bolder;
+    font-size: 30px;
+    position: relative;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
+}
+#IPaddrTxt {
+    position: absolute;
+    right: 10px;
+    bottom: 0;
+    font-size: 80px;
+}
+#IPaddrTxt {
+    position: absolute;
+    right: 10px;
+    bottom: 0;
+    font-size: 80px;
+}
+#IPaddrTxt u {
+    text-decoration-color: rgba(0, 6, 68, 0.25);
+}
+#handshake {
+    position: absolute;
+    left: 10px;
+    bottom: 0;
+    font-size: 80px;
+}
+#handshake a {font-size: 35px;}
+#raysBox {
+    top: -50px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+#backgroundIcons {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+.qrborder {
+    border-style: solid;
+    background-color: white;
+    padding: 10px;
+    width: min-content;
+    box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.34);
+}
