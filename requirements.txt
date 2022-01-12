@@ -7,3 +7,8 @@ imutils
 mss
 sockets
 eel
+keyboard
+
+#below only used for developement
+htmlmin
+jsmin

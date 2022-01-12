@@ -130,17 +130,17 @@ def endmeeting():
         return ('', 204)
     else:
         return ('', 400)
-@app.route("/")
+@app.route("/feed")
 def video_feed():
     if confirmShake():
         return Response(generate(),
             mimetype = "multipart/x-mixed-replace; boundary=frame")
     else:
         return ('', 400)
-@app.route("/remote_connected")
-def remote_connected():
+@app.route('/')
+def web_index():
     eel.remoteConnected()
-    return ('', 204)
+    return render_template('index.html')
 
 
 def generate():

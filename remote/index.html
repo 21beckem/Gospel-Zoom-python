@@ -11,9 +11,7 @@
 <link rel="apple-touch-icon" sizes="76x76" href="../churchZoomIcon.png">
 <link rel="apple-touch-icon" sizes="120x120" href="../churchZoomIcon.png">
 <link rel="apple-touch-icon" sizes="152x152" href="../churchZoomIcon.png">
-<link rel="stylesheet" href="style.css">
-
-<script src="https://unpkg.com/html5-qrcode"></script>
+<link rel="stylesheet"  href="style.css">
 </head>
 <body>
 
@@ -24,7 +22,6 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <a href="javascript:void(0)" onclick="openPage('home')">Home</a>
     <a href="javascript:void(0)" onclick="openPage('handshake')">Handshake</a>
-    <a href="javascript:void(0)" onclick="openPage('connect')">Connect to Host</a>
     
 </div>
 
@@ -68,44 +65,8 @@
             <button class="saveBtn" onclick="saveHandshake()">Save</button>
         </center>
     </div>
-    <div style="display: none;" id="page-connect" class="page">
-        <br><br><br>
-        <center>
-            <h4>Server Address:</h4>
-            <br><br>
-            <div id="addrInput">
-                <input id="ipInput" value="192.168.0.0" type="text" autocomplete="off">:<input id="portInput" value="1830" type="number" autocomplete="off">
-            </div>
-            <br>
-            <br><br>
-            <button class="saveBtn" onclick="saveAddress()">Save</button>
-            <!-- <br>
-            <h2>OR</h2>
-            <button id="scanQRcodeBtn" onclick="getCameraAccess()">Scan QR Code</button> -->
-        </center>
-    </div>
-    <div style="display: none;" id="page-qr" class="page">
-        <center>
-            <div id="qrLoader" class="loader"></div>
-            <button style="padding:15px;margin-top:100px;margin-bottom: 5px;" onclick="cancelScanning()">Cancel</button>
-            <div id="qr-preview" style="width:100%"></div>
-        </center>
-    </div>
 </div>
 
-<script src="script.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-    // iOS web app full screen hacks.
-    if(window.navigator.standalone == true) {
-        // make all link remain in web app mode.
-        document.getElementsByTagName('a').forEach(el => {
-            window.location = $(this).attr('href');
-            return false;
-        });
-    }
-});
-</script>
+<script id="mainScript"  src="script.js"></script>
 </body>
 </html> 

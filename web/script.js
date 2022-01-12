@@ -3,8 +3,6 @@ const IPaddrTxt =_('IPaddrTxt');
 const QRcontainer = _('QRcontainer');
 const HandShakeEl = _('handshake');
 
-new QRCode(_("remoteUrlQR"), 'https://21beckem.github.io/Gospel-Zoom/remote/');
-
 eel.expose(setHandshake);
 function setHandshake(shake) {
     HandShakeEl.innerHTML = '<a>HandShake</a><br>' + shake;
@@ -20,5 +18,7 @@ function remoteConnected() {
 }
 eel.expose(setIPconnectionQR);
 function setIPconnectionQR(ipAddr) {
-    IPaddrTxt.innerHTML = '<u>' + JSON.parse(ipAddr).join('</u> : <u>') + '</u>';
+    ipAddr = JSON.parse(ipAddr);
+    new QRCode(_("remoteUrlQR"), 'http://' + ipAddr.join(':'));
+    IPaddrTxt.innerHTML = '<u>' + ipAddr.join('</u> : <u>') + '</u>';
 }

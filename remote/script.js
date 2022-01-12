@@ -5,7 +5,6 @@ Storage.prototype.getObject = function(key) {
     var value = this.getItem(key);
     return value && JSON.parse(value); 
 }
-let HostAddr;
 let Handshake;
 function getHandshake() {
     let shake = localStorage.getObject('Handshake') || [];
@@ -15,15 +14,6 @@ function getHandshake() {
         return shake;
     }
 }
-function getHostAddr() {
-    let addr = localStorage.getObject('HostAddr') || [];
-    if (addr.length == 2) {
-        ipInput.value = addr[0];
-        portInput.value = addr[1];
-    }
-    HostAddr = 'http://' + addr.join(':');
-    return HostAddr;
-}
 async function connectToHost() {
     
 }
@@ -32,16 +22,10 @@ function _(x) {return document.getElementById(x);}
 const sideNav = _("sideNav");
 const mainContent = _("mainContent");
 const handshakeInput = _('handshakeInput');
-const ipInput = _('ipInput');
-const portInput = _('portInput');
 const page_home = _('page-home');
 const page_handshake = _('page-handshake');
-const page_connect = _('page-connect');
-const page_qr = _('page-qr');
-const qrLoader = _('qrLoader');
 const previewScreenBox = _('previewScreenBox');
 
-getHostAddr();
 getHandshake();
 
 function openNav() {
@@ -71,88 +55,20 @@ function openPage(pageName) {
         case 'home':
             page_home.style.display = 'block';
             page_handshake.style.display = 'none';
-            page_connect.style.display = 'none';
-            page_qr.style.display = 'none';
             break;
         case 'handshake':
             page_home.style.display = 'none';
             page_handshake.style.display = 'block';
-            page_connect.style.display = 'none';
-            page_qr.style.display = 'none';
             setTimeout(handshakeInput.focus(), 400);
             getHandshake();
-            break;
-        case 'connect':
-            page_home.style.display = 'none';
-            page_handshake.style.display = 'none';
-            page_connect.style.display = 'block';
-            page_qr.style.display = 'none';
-            getHostAddr();
-            break;
-        case 'qr':
-            page_home.style.display = 'none';
-            page_handshake.style.display = 'none';
-            page_connect.style.display = 'none';
-            page_qr.style.display = 'block'; qrLoader.style.display = 'block';
             break;
         default:
             break;
     }
     closeNav();
 }
-function onScanSuccess(decodedText, decodedResult) {
-    let thisData = JSON.parse(decodedText);
-    console.log(thisData);
-    if (thisData.length == 2) {
-        if (typeof thisData[0] === 'string' && typeof thisData[1] === 'number') {
-            localStorage.setObject('HostAddr', thisData);
-            html5QrCodeScan.stop().then(function() {
-                openPage('home')
-                showAlert('successBox')
-            });
-        }
-    }
-}
-function cancelScanning() {
-    html5QrCodeScan.stop();
-    openPage('connect');
-}
-let html5QrCodeScan;
-function getCameraAccess() {
-    openPage('qr')
-    Html5Qrcode.getCameras().then(devices => {
-        /**
-         * devices would be an array of objects of type:
-         * { id: "id", label: "label" }
-         */
-        if (devices && devices.length) {
-            var cameraId;
-            var foundBack = false;
-            for (let i = 0; i < devices.length; i++) {
-                if (devices[i].label.toLowerCase().includes("back")) {
-                    foundBack = true;
-                    cameraId = devices[i].id
-                    break;
-                }
-            }
-            if (!foundBack) {
-                cameraId = devices[0].id;
-            }
-            html5QrCodeScan = new Html5Qrcode("qr-preview");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-            html5QrCodeScan.start({ facingMode: "environment" }, config, onScanSuccess);
-            qrLoader.style.display = 'none';
-        }
-    }).catch(err => {
-        alert(err);
-    });
-}
-window.onload = function() {
-    getHostAddr();
-    fetch(HostAddr + '/remote_connected').then();
-};
 function refreshPreviewImg() {
-    previewScreenBox.style.backgroundImage = 'url(' + HostAddr + '/?x=' + Handshake + '&t=' + new Date().getTime() + ')';
+    previewScreenBox.style.backgroundImage = 'url(/feed?x=' + Handshake + '&t=' + new Date().getTime() + ')';
 }
 function handlePreviewToggle(toggleEl) {
     if (toggleEl.checked) {
@@ -162,7 +78,7 @@ function handlePreviewToggle(toggleEl) {
     }
 }
 async function sendBtnPress(path) {
-    fetch(HostAddr + path + '?x=' + Handshake)
+    fetch(path + '?x=' + Handshake)
     .then((response) => {
         if (response.ok) {
             return response.json();
@@ -192,15 +108,6 @@ function saveHandshake() {
     localStorage.setObject('Handshake', toBeSaved);
     openPage('home');
     showAlert('successBox');
-    getHostAddr();
-    getHandshake();
-}
-function saveAddress() {
-    var toBeSaved = [ipInput.value, portInput.value];
-    localStorage.setObject('HostAddr', toBeSaved);
-    openPage('home');
-    showAlert('successBox');
-    getHostAddr();
     getHandshake();
 }
 function detectswipe(el,func) {
