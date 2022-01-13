@@ -74,24 +74,11 @@ function handlePreviewToggle(toggleEl) {
     if (toggleEl.checked) {
         refreshPreviewImg();
     } else {
-        previewScreenBox.style.backgroundImage = 'url(../churchZoomIcon.png)';
+        previewScreenBox.style.backgroundImage = 'url(/churchZoomIcon)';
     }
 }
 async function sendBtnPress(path) {
-    fetch(path + '?x=' + Handshake)
-    .then((response) => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Something went wrong');
-        }
-    })
-    .then((responseJson) => {
-        // Do something with the response
-    })
-    .catch((error) => {
-        console.log(error)
-    });
+    fetch(path + '?x=' + Handshake);
 }
 
 function showAlert(alertBoxId, timeMillis=2000) {
@@ -105,6 +92,7 @@ function verifyHandshakeLength() {
 }
 function saveHandshake() {
     var toBeSaved = [handshakeInput.value];
+    handshakeInput.value = '';
     localStorage.setObject('Handshake', toBeSaved);
     openPage('home');
     showAlert('successBox');

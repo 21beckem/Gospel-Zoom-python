@@ -6,7 +6,7 @@ try:
     from cv2 import cv2
     from threading import Thread
     from numpy import asarray
-    from flask import Response, Flask, render_template, request
+    from flask import Response, Flask, render_template, request, send_file
     import threading, imutils, mss, socket, eel, random, numpy, urllib.parse, keyboard
 except ModuleNotFoundError as err:
     print("You don't have all the needed modules installed. Please go through the read me files.")
@@ -148,6 +148,12 @@ def video_feed():
             mimetype = "multipart/x-mixed-replace; boundary=frame")
     else:
         return ('', 400)
+@app.route('/favicon.ico')
+def web_Favicon():
+    return send_file('favicon.ico', mimetype='image/x-icon')
+@app.route('/churchZoomIcon')
+def web_IconImage():
+    return send_file('churchZoomIcon.png', mimetype='image/png')
 @app.route('/')
 def web_index():
     eel.remoteConnected()
@@ -195,7 +201,7 @@ eel.init('web')
 def startEel():
     eel.start('index.html', mode=config['browser'], block=False, cmdline_args=['-–start-fullscreen'])
     # manage numpad
-    eel.sleep(1)
+    eel.sleep(3)
     keyboard.press_and_release('F11')
     Zoom.resetMousePos()
     wasRunning = False;
