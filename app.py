@@ -43,10 +43,12 @@ class Zoom:
             if Zoom.rawPersistantClick('startBtn.png'):
                 return True
         return False
-    def resetMousePos():
-        x = gui.size()[0] / 2
-        y = 0#gui.size()[1] / 2
+    def resetMousePos(click=False):
+        x = gui.size()[0]# / 2
+        y = gui.size()[1] / 2
         gui.moveTo(x, y)
+        if click:
+            gui.click()
     def rawPersistantClick(imgName):
         for _ in range(Zoom.tries):
             var = gui.locateOnScreen(__path__ + imgName, confidence=config['buttonConfidence'])
@@ -191,8 +193,11 @@ def startScreenServer():
 #region   Eel
 eel.init('web')
 def startEel():
-    eel.start('index.html', mode=config['browser'], block=False)
+    eel.start('index.html', mode=config['browser'], block=False, cmdline_args=['-–start-fullscreen'])
     # manage numpad
+    eel.sleep(1)
+    keyboard.press_and_release('F11')
+    Zoom.resetMousePos()
     wasRunning = False;
     eel.setIPconnectionQR('["' + socket.gethostbyname(socket.gethostname()) + '", 1830]')
     while True:
@@ -208,11 +213,13 @@ def startEel():
         else:
             if wasRunning:
                 wasRunning = False
+                eel.sleep(0.5)
                 eel.webinarEnded()
+                Zoom.resetMousePos(click=True)
                 Handshake = None;
             if keyboard.is_pressed('0'):
                 set_handshake()
-                if Zoom.launchWebinar('https://zoom.us/s/96138303673'):
+                if Zoom.launchWebinar('https://zoom.us/s/' + config['webinarId']):
                     eel.sleep(5)
                 else:
                     print('error while launching webinar')
@@ -225,18 +232,6 @@ def set_handshake():
     Handshake = str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9)) + str(random.randint(0, 9))
     eel.setHandshake(Handshake)
 #endregion
-
-def main():
-    if Zoom.launchWebinar('https://zoom.us/s/' + config['webinarId']):
-        eel.sleep(5)
-
-        while True:
-            eel.sleep(1)
-            if not Zoom.running:
-                break
-    else:
-        print('error while launching webinar')
-
 
 if __name__ == '__main__':
     if getConfig():
