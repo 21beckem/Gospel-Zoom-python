@@ -25,11 +25,11 @@ pip install -r requirements.txt
     "remotePort": 1830
 }
 ```
-4. Enable developer mode on Microsoft Edge or Google Chrome to install FASTER_closeZoomTabsExtension as an unpacked extension. Code for that originally from [this extension](https://github.com/ChromeAdmin/zoom-meetings-page-auto-closer)(I only changed the time from 21 to 5 seconds)
 
 ## Zoom Setup
 1. __Ensure that your default browser will autofill your zoom email and password!__
-2. Zoom settings you need to turn __ON__
+2. Install a zoom page closer extention like [this one](https://chrome.google.com/webstore/detail/zoom-closer/appjbedfhcmpknanmbndpojcllfaemal?hl=en) on your browser
+3. Zoom settings you need to turn __ON__
    - General
      - Always show meeting controls
      - Ask me to confirm when I leave a meeting
