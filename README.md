@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 ## Zoom Setup
 1. __Ensure that your default browser will autofill your zoom email and password!__
-2. Install a zoom page closer extention like [this one](https://chrome.google.com/webstore/detail/zoom-closer/appjbedfhcmpknanmbndpojcllfaemal?hl=en) on your browser
+2. Install a zoom page closer extention like [this one](https://microsoftedge.microsoft.com/addons/detail/zoom-auto-close/makanddcfijlakgmngionnipafcngkje) on your browser
 3. Zoom settings you need to turn __ON__
    - General
      - Always show meeting controls
