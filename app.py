@@ -114,11 +114,14 @@ lock = threading.Lock()
 app = Flask(__name__)
 
 Handshake = None;
+userShake = '0'
 
 eel.sleep(1)
 
 def confirmShake():
-    return Handshake == request.args.get('x')
+    global Handshake, userShake
+    userShake = request.args.get('x')
+    return Handshake == userShake
 
 @app.route('/startmeeting')
 def startmeeting():
@@ -161,22 +164,20 @@ def web_index():
 
 
 def generate():
-	global outputFrame, lock
-	while True:
-		# make sure we actually geta capture
-		with lock:
-			# check if the output frame is available, otherwise skip
-			# the iteration of the loop
-			if outputFrame is None:
-				continue
-			# encode the frame in JPEG format
-			(flag, encodedImage) = cv2.imencode(".jpg", cv2.cvtColor(outputFrame, cv2.COLOR_BGR2RGB))
-			# ensure the frame was successfully encoded
-			if not flag:
-				continue
-		# yield the output frame in the byte format
-		yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
-			bytearray(encodedImage) + b'\r\n')
+    global outputFrame, lock, Handshake, userShake
+    while True:
+        if not Handshake == userShake:
+            yield send_file('churchZoomIcon.png', mimetype='image/png')
+            break
+        # make sure we actually geta capture
+        with lock:
+            if outputFrame is None:
+                continue
+            (flag, encodedImage) = cv2.imencode(".jpg", cv2.cvtColor(outputFrame, cv2.COLOR_BGR2RGB))
+            if not flag:
+                continue
+            yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
+                bytearray(encodedImage) + b'\r\n')
 
 
 def get_frames():
@@ -199,7 +200,9 @@ def startScreenServer():
 #region   Eel
 eel.init('web')
 def startEel():
-    eel.start('index.html', mode=config['browser'], block=False, cmdline_args=['-–start-fullscreen'])
+    eel.start('index.html', mode=config['browser'], block=False)
+    #os.system('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe')
+    #webbrowser.open_new('www.google.com')
     # manage numpad
     eel.sleep(3)
     keyboard.press_and_release('F11')
@@ -225,8 +228,12 @@ def startEel():
                 Handshake = None;
             if keyboard.is_pressed('0'):
                 set_handshake()
-                if Zoom.launchWebinar('https://zoom.us/s/' + config['webinarId']):
-                    eel.sleep(5)
+                if Zoom.launchWebinar('https://zoom.us/s/' + config['webinarId']) or True:
+                    eel.sleep(9)
+                    Zoom.resetMousePos(click=True)
+                    gui.hotkey('ctrl', 'w')
+                    eel.sleep(0.05)
+                    gui.hotkey('alt', 'tab')
                 else:
                     print('error while launching webinar')
                     eel.webinarEnded()
