@@ -115,6 +115,7 @@ app = Flask(__name__)
 
 Handshake = None;
 userShake = '0'
+userGettingScreenFeed = False
 
 eel.sleep(1)
 
@@ -147,6 +148,7 @@ def endmeeting():
 @app.route("/feed")
 def video_feed():
     if confirmShake():
+        userGettingScreenFeed = True
         return Response(generate(),
             mimetype = "multipart/x-mixed-replace; boundary=frame")
     else:
@@ -156,6 +158,7 @@ def web_Favicon():
     return send_file('favicon.ico', mimetype='image/x-icon')
 @app.route('/churchZoomIcon')
 def web_IconImage():
+    userGettingScreenFeed = False
     return send_file('churchZoomIcon.png', mimetype='image/png')
 @app.route('/')
 def web_index():
@@ -166,7 +169,8 @@ def web_index():
 def generate():
     global outputFrame, lock, Handshake, userShake
     while True:
-        if not Handshake == userShake:
+        if not Handshake == userShake or not userGettingScreenFeed:
+            userGettingScreenFeed = False
             yield send_file('churchZoomIcon.png', mimetype='image/png')
             break
         # make sure we actually geta capture
