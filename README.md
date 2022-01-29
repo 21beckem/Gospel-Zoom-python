@@ -1,8 +1,18 @@
 # Gospel Zoom&trade;
 
-<img src="https://github.com/21beckem/Gospel-Zoom/blob/main/churchZoomIcon.png?raw=true" alt="logo" width="130"/>
+<p align="center">
+   <img src="https://github.com/21beckem/Gospel-Zoom/blob/main/churchZoomIcon.png?raw=true" alt="logo" width="130"/>
+</p>
+   
+<p align="center">Software made to make managing zoom webinars MUCH easier!</p>
 
-Software made to make managing zoom webinars MUCH easier!
+## Demo
+
+<p align="center">
+   <a href="https://youtu.be/F2N2xZkTnfU">
+      <img src="https://drive.google.com/uc?export=view&id=1p69An11DmVjCsnjjUQXXu07YRIEtgMo4" alt="Watch the demo video" width="40%"/>
+   </a>
+</p>
 
 ## Installation
 
@@ -28,8 +38,8 @@ pip install -r requirements.txt
 
 ## Zoom Setup
 1. __Ensure that your default browser will autofill your zoom email and password!__
-2. Install a zoom page closer extention like [this one](https://microsoftedge.microsoft.com/addons/detail/zoom-auto-close/makanddcfijlakgmngionnipafcngkje) on your browser
-3. Zoom settings you need to turn __ON__
+<!--2. Install a zoom page closer extention like [this one](https://microsoftedge.microsoft.com/addons/detail/zoom-auto-close/makanddcfijlakgmngionnipafcngkje) on your browser-->
+2. Zoom settings you need to turn __ON__
    - General
      - Always show meeting controls
      - Ask me to confirm when I leave a meeting
