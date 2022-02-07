@@ -24,6 +24,7 @@ const mainContent = _("mainContent");
 const handshakeInput = _('handshakeInput');
 const page_home = _('page-home');
 const page_handshake = _('page-handshake');
+const page_about = _('page-about');
 const previewScreenBox = _('previewScreenBox');
 
 getHandshake();
@@ -55,12 +56,19 @@ function openPage(pageName) {
         case 'home':
             page_home.style.display = 'block';
             page_handshake.style.display = 'none';
+            page_about.style.display = 'none';
             break;
         case 'handshake':
             page_home.style.display = 'none';
             page_handshake.style.display = 'block';
+            page_about.style.display = 'none';
             setTimeout(handshakeInput.focus(), 400);
             getHandshake();
+            break;
+        case 'about':
+            page_home.style.display = 'none';
+            page_handshake.style.display = 'none';
+            page_about.style.display = 'block';
             break;
         default:
             break;

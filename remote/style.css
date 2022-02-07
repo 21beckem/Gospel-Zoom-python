@@ -60,6 +60,14 @@ body, html {
     display: flex;
     flex-flow: row wrap;
 }
+#aboutInfo {
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    height: calc(100% - 150px);
+    overflow-y: scroll;
+}
 .btnBox {
     flex-basis: 50%;
     position: relative;
