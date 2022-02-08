@@ -10,5 +10,5 @@ eel
 keyboard
 
 #below only used for developement
-htmlmin
-jsmin
+#htmlmin
+#jsmin
