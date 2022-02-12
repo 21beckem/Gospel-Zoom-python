@@ -1,6 +1,7 @@
 {
-    "webinarId": "96138303673",
+    "webinarId" : "96138303673",
     "browser" : "edge",
-    "buttonConfidence": 0.9,
-    "remotePort": 1830
+    "buttonConfidence" : 0.9,
+    "remotePort" : 1830,
+    "obs_password" : "1234"
 }
