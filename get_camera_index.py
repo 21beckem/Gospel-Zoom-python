@@ -7,6 +7,8 @@ if len(args) <= 1:
     print("please give an index to test (start at 0)")
     exit()
 
+print('press q to exit')
+
 # define a video capture object
 vid = cv2.VideoCapture(int(args[1]))
 

@@ -63,6 +63,17 @@ zipfile.extractall(path = 'obs-studio/')
 print("done!")
 print()
 print("------------------------------------------------------------------")
+print("Installing OBS...")
+print("------------------------------------------------------------------")
+
+#region install OBS Studio
+resp = urlopen("https://cdn-fastly.obsproject.com/downloads/OBS-Studio-" + OBS_version + "-Full-x64.zip")
+zipfile = ZipFile(BytesIO(resp.read()))
+zipfile.extractall(path = 'obs-studio/')
+#endregion
+print("done!")
+print()
+print("------------------------------------------------------------------")
 print("Installing Virtual Camera...")
 print("------------------------------------------------------------------")
 
@@ -72,17 +83,6 @@ filePath = thisDir.joinpath('virtualCamInstaller.exe')
 VirtualCamProcess = subprocess.Popen(filePath, cwd=thisDir)
 VirtualCamProcess.wait()
 os.remove("virtualCamInstaller.exe")
-#endregion
-print("done!")
-print()
-print("------------------------------------------------------------------")
-print("Installing OBS...")
-print("------------------------------------------------------------------")
-
-#region install OBS Studio
-resp = urlopen("https://cdn-fastly.obsproject.com/downloads/OBS-Studio-" + OBS_version + "-Full-x64.zip")
-zipfile = ZipFile(BytesIO(resp.read()))
-zipfile.extractall(path = 'obs-studio/')
 #endregion
 print("done!")
 print()
