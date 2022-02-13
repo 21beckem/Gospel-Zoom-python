@@ -3,9 +3,10 @@ import cv2
 
 app = Flask(__name__)
 
-camera = cv2.VideoCapture(0)  # use 0 for web camera
+camera = cv2.VideoCapture(1)  # use 0 for web camera
 
 def gen_frames():  # generate frame by frame from camera
+    c = 0
     while True:
         # Capture frame-by-frame
         success, frame = camera.read()  # read the camera frame
@@ -14,6 +15,8 @@ def gen_frames():  # generate frame by frame from camera
         else:
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
+            c += 1
+            print('yeilding:', c)
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
 
@@ -27,7 +30,7 @@ def video_feed():
 @app.route('/')
 def index():
     """Video streaming home page."""
-    return render_template('index.html')
+    return render_template('test_index.html')
 
 
 if __name__ == '__main__':
