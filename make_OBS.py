@@ -1,91 +1,23 @@
 from pathlib import Path
 from io import BytesIO
 from zipfile import ZipFile
-from urllib.request import urlopen, urlretrieve
-from shutil import *
+from urllib.request import urlopen
 import subprocess, os
-
-def copytree(src, dst, symlinks=False, ignore=None):
-    names = os.listdir(src)
-    if ignore is not None:
-        ignored_names = ignore(src, names)
-    else:
-        ignored_names = set()
-
-    if not os.path.isdir(dst): # This one line does the trick
-        os.makedirs(dst)
-    errors = []
-    for name in names:
-        if name in ignored_names:
-            continue
-        srcname = os.path.join(src, name)
-        dstname = os.path.join(dst, name)
-        try:
-            if symlinks and os.path.islink(srcname):
-                linkto = os.readlink(srcname)
-                os.symlink(linkto, dstname)
-            elif os.path.isdir(srcname):
-                copytree(srcname, dstname, symlinks, ignore)
-            else:
-                # Will raise a SpecialFileError for unsupported file types
-                copy2(srcname, dstname)
-        # catch the Error from the recursive copytree so that we can
-        # continue with other files
-        except EnvironmentError:
-            errors.append((srcname, dstname, str(EnvironmentError)))
-    try:
-        copystat(src, dst)
-    except OSError:
-        if WindowsError is not None and isinstance(OSError, WindowsError):
-            # Copying file access times may fail on Windows
-            pass
-        else:
-            errors.extend((src, dst, str(OSError)))
-    if errors:
-        raise Error
-
-thisDir = Path(__file__).parent
-#print('thisDir', thisDir)
 
 OBS_version = '27.1.3'
 OBS_websocket_version = '4.9.1'
-OBS_virtualcam_version = '2.0.5'
-
-print("------------------------------------------------------------------")
-print("Installing OBS Tools...")
-print("------------------------------------------------------------------")
-
-#region install OBS Websocket
-resp = urlopen("https://github.com/obsproject/obs-websocket/releases/download/" + OBS_websocket_version + "/obs-websocket-" + OBS_websocket_version + "-Windows.zip")
-zipfile = ZipFile(BytesIO(resp.read()))
-zipfile.extractall(path = 'obs-studio/')
-#endregion
-print("done!")
-print()
-print("------------------------------------------------------------------")
-print("Installing Virtual Camera...")
-print("------------------------------------------------------------------")
-
-#region install Second VirtualCam
-resp = urlretrieve("https://github.com/Fenrirthviti/obs-virtual-cam/releases/download/" + OBS_virtualcam_version + "/OBS-Virtualcam-" + OBS_virtualcam_version + "-Windows-installer.exe", "virtualCamInstaller.exe")
-filePath = thisDir.joinpath('virtualCamInstaller.exe')
-VirtualCamProcess = subprocess.Popen(filePath, cwd=thisDir)
-VirtualCamProcess.wait()
-os.remove("virtualCamInstaller.exe")
-#endregion
-print("done!")
-print()
-print("------------------------------------------------------------------")
-print("Installing OBS...")
-print("------------------------------------------------------------------")
 
 #region install OBS Studio
 resp = urlopen("https://cdn-fastly.obsproject.com/downloads/OBS-Studio-" + OBS_version + "-Full-x64.zip")
 zipfile = ZipFile(BytesIO(resp.read()))
 zipfile.extractall(path = 'obs-studio/')
 #endregion
-print("done!")
-print()
+
+#region install OBS Websocket
+resp = urlopen("https://github.com/obsproject/obs-websocket/releases/download/" + OBS_websocket_version + "/obs-websocket-" + OBS_websocket_version + "-Windows.zip")
+zipfile = ZipFile(BytesIO(resp.read()))
+zipfile.extractall(path = 'obs-studio/')
+#endregion
 
 #region make profile file
 os.makedirs('obs-studio/config/obs-studio/basic/scenes')
@@ -122,5 +54,6 @@ MonitoringDeviceId={0.0.0.00000000}.{258da8ef-4732-4816-b5a2-f2aef648c40a}
 f.close()
 #endregion
 
+thisDir = Path(__file__).parent
 OBSexe_dir = thisDir.joinpath('obs-studio/bin/64bit/')
 OBSprocess = subprocess.Popen(OBSexe_dir.joinpath('obs64.exe'), cwd=OBSexe_dir)
