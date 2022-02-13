@@ -31,7 +31,7 @@ if not exist python\ (
 )
 python-%PYTHON_VERSION%-amd64.exe /passive Include_tcltk=0 Include_test=0 InstallLauncherAllUsers=0 Include_launcher=0 Include_doc=0 Shortcuts=0 
 
-del python-%PYTHON_VERSION%-amd64.exe
+::del python-%PYTHON_VERSION%-amd64.exe
 echo done!
 
 echo.
