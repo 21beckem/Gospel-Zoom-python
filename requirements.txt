@@ -8,8 +8,6 @@ mss
 sockets
 eel
 keyboard
-obs-websocket-py
-progress
 
 #below only used for developement
 #htmlmin

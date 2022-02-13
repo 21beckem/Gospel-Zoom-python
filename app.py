@@ -7,7 +7,6 @@ try:
     from threading import Thread
     from numpy import asarray
     from flask import Response, Flask, render_template, request, send_file
-    from obswebsocket import obsws, requests
     import threading, imutils, mss, socket, eel, random, numpy, urllib.parse, keyboard
 except ModuleNotFoundError as err:
     print("You don't have all the needed modules installed. Please go through the read me files.")
@@ -23,44 +22,6 @@ def getConfig():
         if not key in config:
             return False
     return True
-
-#region OBS Control
-class OBS:
-    host = 'localhost'
-    port = 4444
-    password = ''
-    ws = None
-    connected = False
-    scenes = []
-    def connect(thisPass):
-        OBS.password = thisPass
-        OBS.ws = obsws(OBS.host, OBS.port, OBS.password)
-        OBS.ws.connect()
-        OBS.connected = True
-        OBS.getScenes()
-        return OBS.connected
-    def getCurrentScene():
-        if OBS.connected:
-            return OBS.ws.call(requests.GetCurrentScene()).getName()
-    def getScenes():
-        if OBS.connected:
-            scenes = OBS.ws.call(requests.GetSceneList())
-            sceneNames = []
-            for s in scenes.getScenes():
-                sceneNames.append(s['name'])
-                OBS.scenes = scenes
-            return sceneNames
-        return ['error']
-    def setScene(sceneName):
-        if OBS.connected:
-            OBS.ws.call(requests.SetCurrentScene(sceneName))
-    def nextScene():
-        if OBS.connected:
-            currentI = OBS.scenes.index(OBS.getCurrentScene())
-            currentI = (currentI + 1) % len(OBS.scenes)
-            OBS.setScene(OBS.scenes[currentI])
-#endregion
-
 #region   Zoom
 
 __path__ = 'zoom_images/'
@@ -173,7 +134,7 @@ def startmeeting():
 @app.route('/togglefeed')
 def togglefeed():
     if confirmShake():
-        OBS.nextScene()
+        Zoom.toggleVideoAndAudio_synced()
         return ('', 204)
     else:
         return ('', 400)
@@ -204,27 +165,38 @@ def web_index():
     eel.remoteConnected()
     return render_template('index.html')
 
-camera = cv2.VideoCapture(0)
+
 def generate():
-    global outputFrame, lock, Handshake, userShake, userGettingScreenFeed
+    global outputFrame, lock, Handshake, userShake
     while True:
         if not Handshake == userShake or not userGettingScreenFeed:
             userGettingScreenFeed = False
             yield send_file('churchZoomIcon.png', mimetype='image/png')
             break
-        success, frame = camera.read()  # read the camera frame
-        if not success:
-            break
-        else:
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        # make sure we actually geta capture
+        with lock:
+            if outputFrame is None:
+                continue
+            (flag, encodedImage) = cv2.imencode(".jpg", cv2.cvtColor(outputFrame, cv2.COLOR_BGR2RGB))
+            if not flag:
+                continue
+            yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
+                bytearray(encodedImage) + b'\r\n')
+
+
+def get_frames():
+    global outputFrame, lock
+    while True:
+        with mss.mss() as sct:
+            rawImg = sct.grab(sct.monitors[1])
+            img = Image.frombytes("RGB", rawImg.size, rawImg.bgra, "raw", "BGRX").resize((700, 394), Image.ANTIALIAS)
+        with lock:
+            outputFrame = asarray(img)
 
 def startScreenServer():
     # start a thread that will perform motion detection
-    #t = threading.Thread(target=get_frames, daemon=True)
-    #t.start()
+    t = threading.Thread(target=get_frames, daemon=True)
+    t.start()
     # start the flask app
     app.run(host=ipv4, port=config['remotePort'], debug=False, threaded=True, use_reloader=False)
 #endregion
@@ -240,13 +212,15 @@ def startEel():
     keyboard.press_and_release('F11')
     Zoom.resetMousePos()
     wasRunning = False;
-    eel.setIPconnectionQR('["' + socket.gethostbyname(socket.gethostname()) + '", ' + str(config['remotePort']) + ']')
+    eel.setIPconnectionQR('["' + socket.gethostbyname(socket.gethostname()) + '", 1830]')
     while True:
         if Zoom.running:
             if not wasRunning:
                 wasRunning = True
+            if keyboard.is_pressed('1'):
+                Zoom.startWebinar()
             if keyboard.is_pressed('2'):
-                OBS.nextScene()
+                Zoom.toggleVideoAndAudio_synced()
             if keyboard.is_pressed('3'):
                 Zoom.endWebinar()
         else:
@@ -259,7 +233,7 @@ def startEel():
             if keyboard.is_pressed('0'):
                 set_handshake()
                 if Zoom.launchWebinar('https://zoom.us/s/' + config['webinarId']) or True:
-                    eel.sleep(10)
+                    eel.sleep(9)
                     Zoom.resetMousePos(click=True)
                     gui.hotkey('ctrl', 'w')
                     eel.sleep(0.05)
