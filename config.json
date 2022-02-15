@@ -1,6 +1,7 @@
 {
-    "webinarId": "96138303673",
-    "browser" : "edge",
-    "buttonConfidence": 0.9,
-    "remotePort": 1830
+    "zoom_email": "me@example.com",
+    "zoom_password": "MySneakyPassword",
+    "webinarId": "00000000000",
+    "remotePort": 1830,
+    "backspace_to_shutdown": true
 }

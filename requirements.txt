@@ -8,6 +8,7 @@ mss
 sockets
 eel
 keyboard
+pyppeteer
 
 #below only used for developement
 htmlmin

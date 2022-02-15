@@ -7,7 +7,7 @@ try:
     from threading import Thread
     from numpy import asarray
     from flask import Response, Flask, render_template, request, send_file
-    import threading, imutils, mss, socket, eel, random, numpy, urllib.parse, keyboard
+    import threading, imutils, mss, socket, eel, random, numpy, urllib.parse, keyboard, asyncio, pyppeteer
 except ModuleNotFoundError as err:
     print("You don't have all the needed modules installed. Please go through the read me files.")
     exit()
@@ -17,7 +17,7 @@ def getConfig():
     f = open('config.json')
     config = json.load(f)
     f.close()
-    neededKeys = ["webinarId", "browser", "buttonConfidence", "remotePort"]
+    neededKeys = ["webinarId", "remotePort", "backspace_to_shutdown"]
     for key in neededKeys:
         if not key in config:
             return False
@@ -31,78 +31,65 @@ class Zoom:
     running = False
     tries = 5
     betweenTries = 0.5
+    center_click_before = True
+    ending_internal = False
     def launchWebinar(startLink):
+        asyncio.run(Zoom.async_launchWebinar(startLink))
+    async def async_launchWebinar(startLink):
+        browser = await pyppeteer.launch(headless=False, userDataDir='webdata/', autoClose=False)
+        page = await browser.newPage()
         link = 'https://zoom.us/switch_account?backUrl=' + urllib.parse.quote(startLink)
-        #print(link)
-        webbrowser.open(link)
-        eel.sleep(3)
-        Zoom.running =  Zoom.rawPersistantClick('signInBtn.png')
+        await page.goto(link)
+        
+        await page.evaluate('''() => {
+        document.getElementById('email').value = "''' + config['zoom_email'] + '''";
+        document.getElementById('password').value = "''' + config['zoom_password'] + '''";
+        document.forms[0].querySelector('button').click();
+        }''')
+        time.sleep(5)
+        await browser.close()
+        Zoom.running =  True
         return Zoom.running
-    def startWebinar():
-        if Zoom.rawPersistantClick('startWebinar.png'):
-            if Zoom.rawPersistantClick('startBtn.png'):
-                return True
-        return False
-    def resetMousePos(click=False):
-        x = gui.size()[0]# / 2
+    def resetMousePos(click=False, center=False):
+        x = (gui.size()[0] / 2) if center else gui.size()[0]
         y = gui.size()[1] / 2
         gui.moveTo(x, y)
         if click:
             gui.click()
-    def rawPersistantClick(imgName):
-        for _ in range(Zoom.tries):
-            var = gui.locateOnScreen(__path__ + imgName, confidence=config['buttonConfidence'])
-            if var != None:
-                gui.click(var)
-                Zoom.resetMousePos()
-                return True
-            eel.sleep(Zoom.betweenTries)
-        return False
-    def rawClick(imgName):
-        var = gui.locateOnScreen(__path__ + imgName, confidence=config['buttonConfidence'])
-        if var != None:
-            gui.click(var)
-            Zoom.resetMousePos()
-            return True
-        return False
-    def setVideo(onOff):
-        imgName = 'videoOff.png' if onOff else 'videoOn.png'
-        Zoom.rawPersistantClick(imgName)
-    def setMic(onOff):
-        imgName = 'micOff.png' if onOff else 'micOn.png'
-        Zoom.rawPersistantClick(imgName)
     def toggleVideo():
-        if not Zoom.rawClick('videoOff.png'):
-            Zoom.rawClick('videoOn.png')
+        if Zoom.center_click_before:
+            Zoom.resetMousePos(click=True, center=True)
+        gui.hotkey('alt', 'v')
+        Zoom.resetMousePos()
     def toggleMic():
-        if not Zoom.rawClick('micOff.png'):
-            Zoom.rawClick('micOn.png')
-    def setVideoAndAudio_synced(onOff):
-        imgName = 'videoOff.png' if onOff else 'videoOn.png'
-        Zoom.rawClick(imgName)
-        imgName = 'micOff.png' if onOff else 'micOn.png'
-        Zoom.rawPersistantClick(imgName)
-    def toggleVideoAndAudio_synced():
-        onOff = Zoom.rawClick('videoOff.png')
-        if not onOff:
-            Zoom.rawClick('videoOn.png')
-        imgName = 'micOff.png' if onOff else 'micOn.png'
-        Zoom.rawPersistantClick(imgName)
+        if Zoom.center_click_before:
+            Zoom.resetMousePos(click=True, center=True)
+        gui.hotkey('alt', 'a')
+        Zoom.resetMousePos()
+    def toggleAudioAndVideo():
+        oldCickBefore = Zoom.center_click_before
+        Zoom.toggleMic()
+        Zoom.center_click_before = False
+        Zoom.toggleVideo()
+        Zoom.center_click_before = oldCickBefore
     def endWebinar():
-        if not Zoom.rawClick('endForAllBtn.png'):
-            Zoom.rawClick('endBtn.png')
+        if Zoom.center_click_before:
+            Zoom.resetMousePos(click=True, center=True)
+        if Zoom.ending_internal:
+            gui.hotkey('enter')
+            Zoom.ending_internal = False
+            Zoom.running = False
+        else:
+            gui.hotkey('alt', 'q')
+            Zoom.ending_internal = True
             cancelEndTh = Thread(target = Zoom.cancelEnd)
             cancelEndTh.start()
-            Zoom.running = True
-            return False
-        else:
-            Zoom.running = False
-            return True
+        Zoom.resetMousePos()
     def cancelEnd(timeout=2):
         eel.sleep(timeout)
-        Zoom.rawClick('cancelEndBtn.png')
-    def test():
-        return True
+        if Zoom.running:
+            gui.hotkey('esc')
+            Zoom.ending_internal = False
 #endregion
 
 #region   Screenserver
@@ -204,23 +191,20 @@ def startScreenServer():
 #region   Eel
 eel.init('web')
 def startEel():
-    eel.start('index.html', mode=config['browser'], block=False)
-    #os.system('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe')
-    #webbrowser.open_new('www.google.com')
+    eel.start('index.html', mode=False, port=1820, block=False)
+    webbrowser.open_new('http://localhost:1820/index.html')
     # manage numpad
     eel.sleep(3)
     keyboard.press_and_release('F11')
     Zoom.resetMousePos()
     wasRunning = False;
-    eel.setIPconnectionQR('["' + socket.gethostbyname(socket.gethostname()) + '", 1830]')
+    eel.setIPconnectionQR('["' + socket.gethostbyname(socket.gethostname()) + '", ' + str(config['remotePort']) + ']')
     while True:
         if Zoom.running:
             if not wasRunning:
                 wasRunning = True
-            if keyboard.is_pressed('1'):
-                Zoom.startWebinar()
             if keyboard.is_pressed('2'):
-                Zoom.toggleVideoAndAudio_synced()
+                Zoom.toggleAudioAndVideo()
             if keyboard.is_pressed('3'):
                 Zoom.endWebinar()
         else:
@@ -230,14 +214,12 @@ def startEel():
                 eel.webinarEnded()
                 Zoom.resetMousePos(click=True)
                 Handshake = None;
+            if config['backspace_to_shutdown'] and keyboard.is_pressed('backspace'):
+                os.system("shutdown /s /t 1")
             if keyboard.is_pressed('0'):
                 set_handshake()
                 if Zoom.launchWebinar('https://zoom.us/s/' + config['webinarId']) or True:
-                    eel.sleep(9)
-                    Zoom.resetMousePos(click=True)
-                    gui.hotkey('ctrl', 'w')
-                    eel.sleep(0.05)
-                    gui.hotkey('alt', 'tab')
+                    Zoom.resetMousePos()
                 else:
                     print('error while launching webinar')
                     eel.webinarEnded()
