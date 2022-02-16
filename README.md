@@ -4,7 +4,7 @@
    <img src="https://github.com/21beckem/Gospel-Zoom/blob/main/churchZoomIcon.png?raw=true" alt="logo" width="130"/>
 </p>
    
-<p align="center">Software made to make managing zoom webinars MUCH easier!</p>
+<p align="center">Software made to make managing Zoom Webinars MUCH easier!</p>
 
 ## Demo
 
@@ -23,23 +23,22 @@ Built on Python 3.10.0
 ```bash
 pip install -r requirements.txt
 ```
-3. Edit config.json for your webinar:
-   - The only mandatory edits needed are for the webinarId and the browser
-     - 'edge' for edge browser, or 'chrome-app' for chrome or firefox
+3. Edit config.json for your webinar with your Zoom email, password, and webinarId
+    - (`webinarId` could also be a meeting id as long as there is no password to join the meeting)
 
 ```json
 {
+    "zoom_email": "me@example.com",
+    "zoom_password": "MySneakyPassword",
     "webinarId": "00000000000",
-    "browser" : "edge",
-    "buttonConfidence": 0.9,
-    "remotePort": 1830
+    "remotePort": 1830,
+    "backspace_to_shutdown": true
 }
 ```
 
 ## Zoom Setup
-1. __Ensure that your default browser will autofill your zoom email and password!__
-<!--2. Install a zoom page closer extention like [this one](https://microsoftedge.microsoft.com/addons/detail/zoom-auto-close/makanddcfijlakgmngionnipafcngkje) on your browser-->
-2. Zoom settings you need to turn __ON__
+1. In your Webinar options, ensure that `Enable Practice Session` is turned off
+2. Zoom settings you need to turn __ON__ on your computer
    - General
      - Always show meeting controls
      - Ask me to confirm when I leave a meeting

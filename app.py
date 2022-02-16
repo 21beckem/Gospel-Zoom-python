@@ -110,18 +110,10 @@ def confirmShake():
     global Handshake, userShake
     userShake = request.args.get('x')
     return Handshake == userShake
-
-@app.route('/startmeeting')
-def startmeeting():
-    if confirmShake():
-        Zoom.startWebinar()
-        return ('', 204)
-    else:
-        return ('', 400)
 @app.route('/togglefeed')
 def togglefeed():
     if confirmShake():
-        Zoom.toggleVideoAndAudio_synced()
+        Zoom.toggleAudioAndVideo()
         return ('', 204)
     else:
         return ('', 400)

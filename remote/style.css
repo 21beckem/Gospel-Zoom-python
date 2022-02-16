@@ -73,6 +73,8 @@ body, html {
     position: relative;
 }
 .ctrlBtn {
+    width: calc(100% - 50px);
+    height: calc(100% - 30px);
     font-size: 15px;
     color: white;
     border: none;
