@@ -1,7 +1,7 @@
 # Gospel Zoom&trade;
 
 <p align="center">
-   <img src="https://github.com/21beckem/Gospel-Zoom/blob/main/churchZoomIcon.png?raw=true" alt="logo" width="130"/>
+   <img src="https://github.com/21beckem/Gospel-Zoom-python/blob/main/churchZoomIcon.png?raw=true" alt="logo" width="130"/>
 </p>
    
 <p align="center">Software made to make managing Zoom Webinars MUCH easier!</p>
